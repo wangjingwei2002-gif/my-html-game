@@ -1,0 +1,607 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>大頭跑者</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Zen+Maru+Gothic:wght@700;900&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 兩個並排面板（左：框選頭部，右：預覽結果），下方一條調整列，最後是儲存區；窄螢幕自動疊成一欄 */
+:root {
+  --bg: #EEF1F7;
+  --surface: #FFFFFF;
+  --fg: #0F1626;
+  --muted: #566078;
+  --line: #D3D9E6;
+  --accent: #1D4FFF;
+  --accent-fg: #FFFFFF;
+  --mark: #F25C1F;
+  --canvas: #DDE3EE;
+  --font-display: "Zen Maru Gothic", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1120;
+    --surface: #151B2E;
+    --fg: #E9EDF8;
+    --muted: #9AA4BC;
+    --line: #29314C;
+    --accent: #7F9BFF;
+    --accent-fg: #0C1120;
+    --mark: #FF8450;
+    --canvas: #0F1526;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1120;
+  --surface: #151B2E;
+  --fg: #E9EDF8;
+  --muted: #9AA4BC;
+  --line: #29314C;
+  --accent: #7F9BFF;
+  --accent-fg: #0C1120;
+  --mark: #FF8450;
+  --canvas: #0F1526;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+header { display: flex; flex-direction: column; gap: 6px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(34px, 7vw, 52px);
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+h1 .big { color: var(--accent); display: inline-block; transform: scale(1.18) rotate(-4deg); transform-origin: 50% 80%; margin-right: 0.12em; }
+header p { margin: 0; color: var(--muted); max-width: 58ch; text-wrap: pretty; }
+
+.stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 16px; }
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.panel-head h2 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.step {
+  display: inline-grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--fg); color: var(--bg);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+}
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+button, .btn {
+  font: inherit; font-size: 14px; font-weight: 500;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 12px;
+  cursor: pointer;
+  min-height: 36px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+button:hover, .btn:hover { border-color: var(--accent); color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+button.primary:hover { color: var(--accent-fg); filter: brightness(1.08); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+#pick:focus-within, label.btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.canvas-wrap {
+  background: var(--canvas);
+  border-radius: 6px;
+  display: flex; justify-content: center; align-items: center;
+  padding: 8px;
+  min-height: 200px;
+  min-width: 0;
+}
+.canvas-wrap canvas { display: block; max-width: 100%; border-radius: 3px; }
+#src { cursor: crosshair; touch-action: none; }
+.canvas-wrap.drop { outline: 2px dashed var(--mark); outline-offset: -4px; }
+.cap { margin: 0; color: var(--muted); font-size: 13px; text-wrap: pretty; }
+.coords { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.controls {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 18px 24px;
+}
+.ctl { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ctl label { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 14px; }
+.ctl output { font-family: var(--font-mono); font-weight: 500; font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ctl small { color: var(--muted); font-size: 12.5px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 4px 0; }
+
+.status { margin: 0; font-size: 13.5px; color: var(--mark); min-height: 1.4em; }
+
+.save { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.save h2 { margin: 0; font-size: 16px; }
+.save-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.cmd {
+  font-family: var(--font-mono); font-size: 12.5px;
+  background: var(--canvas); padding: 8px 10px; border-radius: 6px;
+  overflow-x: auto; max-width: 100%; white-space: nowrap; user-select: all;
+}
+#saveBox { display: flex; flex-direction: column; gap: 8px; }
+#saveImg { max-width: 100%; max-height: 70vh; width: auto; height: auto; align-self: flex-start; border-radius: 4px; border: 1px solid var(--line); }
+details summary { cursor: pointer; font-weight: 500; color: var(--muted); }
+details { display: flex; flex-direction: column; gap: 8px; }
+.head-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.chip { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--mark); border-color: var(--mark); color: #fff; }
+.chip[aria-pressed="true"]:hover { color: #fff; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button:disabled:hover { border-color: var(--line); color: var(--fg); }
+.sel-label { grid-column: 1 / -1; margin: 0; }
+</style>
+
+<main class="wrap">
+  <header>
+    <h1><span class="big">大頭</span>跑者</h1>
+    <p>把路跑照片裡的頭放大，做成大頭梗圖。照片只在這個瀏覽器裡處理，不會上傳。</p>
+  </header>
+
+  <section class="stage">
+    <div class="panel">
+      <div class="panel-head">
+        <h2><span class="step">1</span>框住每個人的頭</h2>
+        <div class="btns">
+          <label class="btn" for="file">選擇照片</label>
+          <input type="file" id="file" accept="image/*">
+          <button type="button" id="useSample">範例圖</button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="srcWrap"><canvas id="src" aria-label="原始照片，可拖曳框選頭部"></canvas></div>
+      <p class="cap" id="srcCap">在照片上拖曳畫出框，要含頭髮、帽子和下巴。有幾個人就框幾次。也可以直接把照片拖進來。</p>
+      <div class="head-row"><div class="chips" id="chips" role="group" aria-label="已框選的頭"></div><button type="button" id="delHead">刪除選取的頭</button></div>
+      <div class="coords" id="coords"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2><span class="step">2</span>預覽結果</h2>
+      </div>
+      <div class="canvas-wrap" id="resWrap"><canvas id="res" aria-label="頭部放大後的預覽"></canvas></div>
+      <p class="status" id="status" role="status"></p>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="調整">
+    <p class="cap sel-label" id="selLabel"></p>
+    <div class="ctl">
+      <label for="scale">放大倍率 <output id="scaleOut">1.8×</output></label>
+      <input type="range" id="scale" min="1" max="3.5" step="0.05" value="1.8">
+      <small>第 1 張範例約 2 倍以上，頭頂超出畫面就調低。</small>
+    </div>
+    <div class="ctl">
+      <label for="down">頭部下移 <output id="downOut">15 px</output></label>
+      <input type="range" id="down" min="-60" max="200" step="1" value="15">
+      <small>讓下巴蓋住脖子，接縫比較自然。</small>
+    </div>
+    <div class="ctl">
+      <label for="feather">邊緣羽化 <output id="featherOut">12 px</output></label>
+      <input type="range" id="feather" min="0" max="60" step="1" value="12">
+      <small>數字越大，頭和身體的交界越柔和。</small>
+    </div>
+  </section>
+
+  <section class="save">
+    <h2>儲存</h2>
+    <div class="save-row">
+      <button type="button" class="primary" id="make">產生可儲存的圖片</button>
+      <span class="cap">產生後，手機長按、電腦按右鍵，選「儲存圖片」。</span>
+    </div>
+    <div id="saveBox" hidden>
+      <img id="saveImg" alt="完成的大頭照">
+    </div>
+    <details>
+      <summary>用先前的 Python 腳本做選取的這個頭（腳本一次處理一個頭）</summary>
+      <div class="save-row">
+        <code class="cmd" id="cmd"></code>
+        <button type="button" id="copyCmd">複製參數</button>
+      </div>
+    </details>
+  </section>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var src = $('src'), sctx = src.getContext('2d');
+  var res = $('res'), rctx = res.getContext('2d');
+  var out = document.createElement('canvas'), octx = out.getContext('2d');
+
+  var S = { img: null, w: 0, h: 0, heads: [], sel: -1, sample: true };
+  var uploadUrl = null, saveUrl = null, pending = false;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function curParams() {
+    return {
+      scale: parseFloat($('scale').value),
+      down: parseInt($('down').value, 10),
+      feather: parseInt($('feather').value, 10)
+    };
+  }
+  function sel() { return S.sel >= 0 ? S.heads[S.sel] : null; }
+
+  /* ---------- 範例圖：用畫布畫一個戴遮陽帽、比讚的跑者 ---------- */
+  function makeSample() {
+    var c = document.createElement('canvas');
+    c.width = 800; c.height = 1200;
+    var g = c.getContext('2d');
+    var gr = g.createLinearGradient(0, 0, 0, 1200);
+    gr.addColorStop(0, '#BFD9F2'); gr.addColorStop(0.45, '#E4EDF5');
+    gr.addColorStop(0.47, '#8E96A3'); gr.addColorStop(1, '#5D6472');
+    g.fillStyle = gr; g.fillRect(0, 0, 800, 1200);
+    g.fillStyle = '#6FA37C';
+    g.beginPath(); g.moveTo(0, 430); g.quadraticCurveTo(200, 340, 420, 410);
+    g.quadraticCurveTo(620, 470, 800, 370); g.lineTo(800, 570); g.lineTo(0, 570); g.fill();
+    g.fillStyle = '#FFFFFF'; g.fillRect(0, 1090, 800, 10);
+
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = '#C98B67'; g.lineWidth = 46;
+    g.beginPath(); g.moveTo(375, 740); g.lineTo(352, 880); g.lineTo(335, 1020); g.stroke();
+    g.beginPath(); g.moveTo(425, 740); g.lineTo(468, 860); g.lineTo(500, 960); g.stroke();
+    g.fillStyle = '#F4F4F4';
+    g.beginPath(); g.ellipse(322, 1046, 46, 22, -0.1, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(520, 990, 46, 22, 0.5, 0, Math.PI * 2); g.fill();
+
+    g.fillStyle = '#16181D'; g.fillRect(338, 630, 124, 130);
+    var tg = g.createLinearGradient(340, 440, 460, 640);
+    tg.addColorStop(0, '#F7A08A'); tg.addColorStop(1, '#F26B3A');
+    g.fillStyle = tg;
+    g.beginPath(); g.moveTo(348, 440); g.lineTo(452, 440); g.lineTo(468, 640); g.lineTo(332, 640); g.closePath(); g.fill();
+
+    g.strokeStyle = '#C98B67'; g.lineWidth = 30;
+    g.beginPath(); g.moveTo(350, 462); g.lineTo(302, 560); g.lineTo(362, 600); g.stroke();
+    g.beginPath(); g.moveTo(450, 462); g.lineTo(520, 520); g.lineTo(512, 438); g.stroke();
+    g.fillStyle = '#C98B67';
+    g.beginPath(); g.ellipse(512, 420, 13, 20, 0, 0, Math.PI * 2); g.fill();
+
+    g.fillStyle = '#C98B67'; g.fillRect(384, 385, 32, 62);
+    g.fillStyle = '#D49A76';
+    g.beginPath(); g.arc(400, 330, 60, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#2A211D';
+    g.beginPath(); g.ellipse(400, 306, 66, 54, 0, Math.PI, 0); g.fill();
+    g.fillStyle = '#9CC3E8'; g.fillRect(336, 290, 128, 14);
+    g.beginPath(); g.ellipse(400, 304, 72, 9, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(240,90,130,.75)'; g.fillRect(358, 318, 84, 18);
+    g.strokeStyle = '#7A3B2C'; g.lineWidth = 4;
+    g.beginPath(); g.arc(400, 346, 18, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+
+    g.fillStyle = 'rgba(15,22,38,.55)';
+    g.font = '28px sans-serif'; g.fillText('範例圖 SAMPLE', 24, 1160);
+    return c;
+  }
+
+  /* ---------- 載入影像 ---------- */
+  function newHead(box) {
+    var P = curParams();
+    return { x: box.x, y: box.y, w: box.w, h: box.h, scale: P.scale, down: P.down, feather: P.feather };
+  }
+  function setImage(img, w, h, sample, box) {
+    S.img = img; S.w = w; S.h = h; S.sample = sample;
+    if (!box) {
+      var bw = Math.round(w * 0.22);
+      box = { x: Math.round(w / 2 - bw / 2), y: Math.round(h * 0.12), w: bw, h: bw };
+    }
+    S.heads = [newHead(box)];
+    S.sel = 0;
+    $('srcCap').textContent = (sample ? '這是範例圖。' : '') + '在照片上拖曳畫出框，要含頭髮、帽子和下巴。有幾個人就框幾次；在框裡拖曳可以移動，點框可以選取。';
+    $('saveBox').hidden = true;
+    update();
+  }
+  function loadSample() {
+    var c = makeSample();
+    setImage(c, c.width, c.height, true, { x: 325, y: 245, w: 150, h: 150 });
+  }
+  function loadFile(f) {
+    if (!f || !f.type || f.type.indexOf('image/') !== 0) return;
+    if (uploadUrl) { try { URL.revokeObjectURL(uploadUrl); } catch (e) {} }
+    uploadUrl = URL.createObjectURL(f);
+    var im = new Image();
+    im.onload = function () { setImage(im, im.naturalWidth, im.naturalHeight, false); };
+    im.onerror = function () { $('srcCap').textContent = '這張照片讀不出來，請換一張 JPG 或 PNG。'; };
+    im.src = uploadUrl;
+  }
+
+  /* ---------- 畫面尺寸 ---------- */
+  function fit(wrapId) {
+    var cw = $(wrapId).clientWidth - 16;
+    var maxH = Math.min(window.innerHeight * 0.72, 760);
+    var asp = S.w / S.h;
+    var dw = Math.max(80, Math.min(cw, maxH * asp));
+    return { dw: dw, dh: dw / asp, dpr: Math.min(window.devicePixelRatio || 1, 2) };
+  }
+
+  function drawSrc() {
+    var f = fit('srcWrap');
+    src.style.width = f.dw + 'px'; src.style.height = f.dh + 'px';
+    src.width = Math.round(f.dw * f.dpr); src.height = Math.round(f.dh * f.dpr);
+    var k = src.width / S.w, i, b;
+    sctx.drawImage(S.img, 0, 0, src.width, src.height);
+    sctx.fillStyle = 'rgba(8,12,24,.5)';
+    sctx.fillRect(0, 0, src.width, src.height);
+    for (i = 0; i < S.heads.length; i++) {
+      b = S.heads[i];
+      sctx.drawImage(S.img, b.x, b.y, b.w, b.h, b.x * k, b.y * k, b.w * k, b.h * k);
+    }
+    var mark = cssVar('--mark') || '#F25C1F';
+    for (i = 0; i < S.heads.length; i++) {
+      b = S.heads[i];
+      var on = i === S.sel;
+      sctx.strokeStyle = on ? mark : '#FFFFFF';
+      sctx.lineWidth = (on ? 2.5 : 1.5) * f.dpr;
+      sctx.setLineDash(on ? [] : [6 * f.dpr, 4 * f.dpr]);
+      sctx.strokeRect(b.x * k, b.y * k, b.w * k, b.h * k);
+      sctx.setLineDash([]);
+      var tag = 20 * f.dpr;
+      sctx.fillStyle = on ? mark : '#FFFFFF';
+      sctx.fillRect(b.x * k, b.y * k, tag, tag);
+      sctx.fillStyle = on ? '#FFFFFF' : '#0F1626';
+      sctx.font = '700 ' + (13 * f.dpr) + 'px sans-serif';
+      sctx.textAlign = 'center'; sctx.textBaseline = 'middle';
+      sctx.fillText(String(i + 1), b.x * k + tag / 2, b.y * k + tag / 2 + 1);
+    }
+    sctx.textAlign = 'start'; sctx.textBaseline = 'alphabetic';
+  }
+
+  /* ---------- 合成 ---------- */
+  function compositeHead(h) {
+    var bx = Math.round(h.x), by = Math.round(h.y), bw = Math.round(h.w), bh = Math.round(h.h);
+    var nw = Math.max(2, Math.round(bw * h.scale)), nh = Math.max(2, Math.round(bh * h.scale));
+    var tmp = document.createElement('canvas');
+    tmp.width = nw; tmp.height = nh;
+    var tctx = tmp.getContext('2d');
+    tctx.imageSmoothingEnabled = true; tctx.imageSmoothingQuality = 'high';
+    tctx.drawImage(S.img, bx, by, bw, bh, 0, 0, nw, nh);
+
+    var id = tctx.getImageData(0, 0, nw, nh), d = id.data;
+    var fs = Math.max(0.5, h.feather * h.scale);
+    var cx = nw / 2, cy = nh / 2;
+    var hx = Math.max(1, cx - fs), hy = Math.max(1, cy - fs);
+    var r = Math.min(Math.min(nw, nh) * 0.45, hx, hy);
+    var ix = hx - r, iy = hy - r;
+    for (var y = 0; y < nh; y++) {
+      var qy = Math.abs(y + 0.5 - cy) - iy;
+      for (var x = 0; x < nw; x++) {
+        var qx = Math.abs(x + 0.5 - cx) - ix;
+        var dist = Math.sqrt(Math.pow(Math.max(qx, 0), 2) + Math.pow(Math.max(qy, 0), 2)) + Math.min(Math.max(qx, qy), 0) - r;
+        var t = clamp((dist + fs) / (2 * fs), 0, 1);
+        var s = t * t * (3 - 2 * t);
+        d[(y * nw + x) * 4 + 3] = Math.round(255 * (1 - s));
+      }
+    }
+    tctx.putImageData(id, 0, 0);
+
+    var newX = Math.round(bx + bw / 2 - nw / 2);
+    var newY = Math.round(by + bh - nh + h.down);
+    octx.drawImage(tmp, newX, newY);
+    return newY < 0 || newX < 0 || newX + nw > S.w;
+  }
+
+  function renderResult() {
+    out.width = S.w; out.height = S.h;
+    octx.drawImage(S.img, 0, 0);
+
+    /* 下巴位置較低（離鏡頭較近）的頭後畫，蓋在上面 */
+    var order = S.heads.map(function (h, i) { return i; }).sort(function (a, b) {
+      return (S.heads[a].y + S.heads[a].h) - (S.heads[b].y + S.heads[b].h);
+    });
+    var overs = [];
+    order.forEach(function (i) { if (compositeHead(S.heads[i])) overs.push(i + 1); });
+
+    var f = fit('resWrap');
+    res.style.width = f.dw + 'px'; res.style.height = f.dh + 'px';
+    res.width = Math.round(f.dw * f.dpr); res.height = Math.round(f.dh * f.dpr);
+    rctx.imageSmoothingQuality = 'high';
+    rctx.drawImage(out, 0, 0, res.width, res.height);
+
+    $('status').textContent = overs.length
+      ? '第 ' + overs.join('、') + ' 位的頭超出照片邊界，超出的部分會被裁掉。可以調低倍率，或把頭往下移。'
+      : '';
+  }
+
+  /* ---------- 側欄資訊 ---------- */
+  function renderChips() {
+    var box = $('chips');
+    box.textContent = '';
+    S.heads.forEach(function (h, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = '第 ' + (i + 1) + ' 位';
+      b.setAttribute('aria-pressed', i === S.sel ? 'true' : 'false');
+      b.addEventListener('click', function () { S.sel = i; syncControls(); update(); });
+      box.appendChild(b);
+    });
+    $('delHead').disabled = S.sel < 0;
+  }
+
+  function updateInfo() {
+    var h = sel();
+    renderChips();
+    if (!h) {
+      $('coords').textContent = '尚未框選頭部　照片 ' + S.w + '×' + S.h;
+      $('cmd').textContent = '';
+      $('selLabel').textContent = '先在照片上框一個頭。';
+    } else {
+      var x1 = Math.round(h.x), y1 = Math.round(h.y), x2 = Math.round(h.x + h.w), y2 = Math.round(h.y + h.h);
+      $('coords').textContent = '第 ' + (S.sel + 1) + ' 位　X ' + x1 + ' · Y ' + y1 + '  →  ' + x2 + ' · ' + y2 + '　照片 ' + S.w + '×' + S.h;
+      $('cmd').textContent = '--box ' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ' --scale ' + h.scale + ' --down ' + h.down + ' --feather ' + h.feather;
+      $('selLabel').textContent = '正在調整第 ' + (S.sel + 1) + ' 位。每個頭各自記住倍率、下移和羽化。';
+    }
+    var P = h || curParams();
+    $('scaleOut').textContent = P.scale.toFixed(2).replace(/0$/, '') + '×';
+    $('downOut').textContent = P.down + ' px';
+    $('featherOut').textContent = P.feather + ' px';
+  }
+
+  function syncControls() {
+    var h = sel();
+    if (!h) return;
+    $('scale').value = h.scale;
+    $('down').value = h.down;
+    $('feather').value = h.feather;
+  }
+
+  function update() {
+    if (!S.img) return;
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () {
+      pending = false;
+      drawSrc(); renderResult(); updateInfo();
+    });
+  }
+
+  /* ---------- 框選 ---------- */
+  var drag = null;
+  function pt(e) {
+    var r = src.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * S.w, y: (e.clientY - r.top) / r.height * S.h };
+  }
+  function inside(b, p) { return p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h; }
+
+  src.addEventListener('pointerdown', function (e) {
+    if (!S.img) return;
+    try { src.setPointerCapture(e.pointerId); } catch (err) {}
+    var p = pt(e), hit = -1, i;
+    if (S.sel >= 0 && inside(S.heads[S.sel], p)) hit = S.sel;
+    else for (i = S.heads.length - 1; i >= 0; i--) { if (inside(S.heads[i], p)) { hit = i; break; } }
+    if (hit >= 0) {
+      S.sel = hit; syncControls();
+      drag = { mode: 'move', i: hit, dx: p.x - S.heads[hit].x, dy: p.y - S.heads[hit].y };
+      update();
+    } else {
+      drag = { mode: 'new', i: -1, x0: p.x, y0: p.y };
+    }
+  });
+  src.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var p = pt(e), h;
+    if (drag.mode === 'move') {
+      h = S.heads[drag.i];
+      h.x = clamp(p.x - drag.dx, 0, S.w - h.w);
+      h.y = clamp(p.y - drag.dy, 0, S.h - h.h);
+    } else {
+      var x1 = clamp(Math.min(drag.x0, p.x), 0, S.w), x2 = clamp(Math.max(drag.x0, p.x), 0, S.w);
+      var y1 = clamp(Math.min(drag.y0, p.y), 0, S.h), y2 = clamp(Math.max(drag.y0, p.y), 0, S.h);
+      if (x2 - x1 >= 12 && y2 - y1 >= 12) {
+        var box = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+        if (drag.i < 0) {
+          S.heads.push(newHead(box));
+          drag.i = S.heads.length - 1;
+          S.sel = drag.i;
+        } else {
+          h = S.heads[drag.i];
+          h.x = box.x; h.y = box.y; h.w = box.w; h.h = box.h;
+        }
+      }
+    }
+    update();
+  });
+  function endDrag() { drag = null; }
+  src.addEventListener('pointerup', endDrag);
+  src.addEventListener('pointercancel', endDrag);
+
+  /* ---------- 控制項與按鈕 ---------- */
+  ['scale', 'down', 'feather'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      var h = sel();
+      if (h) {
+        var P = curParams();
+        h.scale = P.scale; h.down = P.down; h.feather = P.feather;
+      }
+      update();
+    });
+  });
+  $('delHead').addEventListener('click', function () {
+    if (S.sel < 0) return;
+    S.heads.splice(S.sel, 1);
+    S.sel = S.heads.length ? Math.min(S.sel, S.heads.length - 1) : -1;
+    syncControls();
+    update();
+  });
+  $('file').addEventListener('change', function (e) { loadFile(e.target.files && e.target.files[0]); e.target.value = ''; });
+  $('useSample').addEventListener('click', loadSample);
+
+  var wrap = $('srcWrap');
+  wrap.addEventListener('dragover', function (e) { e.preventDefault(); wrap.classList.add('drop'); });
+  wrap.addEventListener('dragleave', function () { wrap.classList.remove('drop'); });
+  wrap.addEventListener('drop', function (e) {
+    e.preventDefault(); wrap.classList.remove('drop');
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    loadFile(f);
+  });
+
+  $('make').addEventListener('click', function () {
+    if (!S.img) return;
+    out.toBlob(function (blob) {
+      if (!blob) return;
+      if (saveUrl) { try { URL.revokeObjectURL(saveUrl); } catch (e) {} }
+      saveUrl = URL.createObjectURL(blob);
+      $('saveImg').src = saveUrl;
+      $('saveBox').hidden = false;
+    }, 'image/jpeg', 0.93);
+  });
+
+  var copyTimer = null;
+  $('copyCmd').addEventListener('click', function () {
+    var btn = $('copyCmd'), text = $('cmd').textContent;
+    function flash(m) {
+      btn.textContent = m;
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(function () { btn.textContent = '複製參數'; }, 1800);
+    }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents($('cmd'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      flash('已選取，請按複製');
+    }
+    var done = false;
+    try {
+      navigator.clipboard.writeText(text).then(function () { flash('已複製'); }, fallback);
+      done = true;
+    } catch (e) {}
+    if (!done) fallback();
+  });
+
+  window.addEventListener('resize', update);
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', update); } catch (e) {}
+
+  loadSample();
+})();
+</script>
+
+</body></html>
