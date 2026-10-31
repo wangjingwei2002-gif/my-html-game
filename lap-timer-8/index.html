@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: portrait phone, sticky control bar, then a fixed 2-column x 4-row grid that fills the screen height; full lap history opens in a bottom sheet */
+/* Layout: portrait phone, control bar on top that scrolls with the page, then a fixed 2-column x 4-row grid that fills the screen height; full lap history opens in a bottom sheet */
 :root {
   --bg: #edf0f4;
   --surface: #ffffff;
@@ -97,11 +97,8 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 :focus-visible { outline: 3px solid var(--l6); outline-offset: 2px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Sticky control bar */
+/* Control bar scrolls with the page */
 .bar {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 5;
   background: var(--bar);
   color: var(--bar-ink);
 }
@@ -245,7 +242,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .btn:active { transform: scale(0.97); }
 .btn.main {
   flex: 1;
-  background: var(--lane);
+  background: var(--l1);
   color: var(--on-lane);
   font-size: 1.3rem;
 }
