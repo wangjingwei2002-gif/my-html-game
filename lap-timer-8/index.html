@@ -1,0 +1,640 @@
+<title>八組計圈碼表</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky control bar over a 2-column (4 on tablet) grid of lane cards, each lane carries its own color */
+:root {
+  --bg: #edf0f4;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #121c28;
+  --muted: #586779;
+  --line: #d3dae3;
+  --bar: #16212e;
+  --bar-ink: #f2f5f9;
+  --go: #2fbf71;
+  --go-ink: #052414;
+  --l1: #d9362b;
+  --l2: #c25400;
+  --l3: #8f6c00;
+  --l4: #1b7a48;
+  --l5: #0b7a7c;
+  --l6: #2563eb;
+  --l7: #7c3aed;
+  --l8: #b4228f;
+  --on-lane: #ffffff;
+  --font-ui: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-num: "Barlow Condensed", "Arial Narrow", "PingFang TC", "Noto Sans TC", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c131a;
+    --surface: #16202a;
+    --surface-2: #1e2a36;
+    --ink: #e9eff5;
+    --muted: #92a2b4;
+    --line: #2a3846;
+    --bar: #1b2835;
+    --go: #3ddc84;
+    --l1: #ff6b5e;
+    --l2: #ffa040;
+    --l3: #e6c34a;
+    --l4: #4ed08a;
+    --l5: #3cc9c9;
+    --l6: #6ea0ff;
+    --l7: #a98bff;
+    --l8: #ee7ad6;
+    --on-lane: #0b1118;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c131a;
+  --surface: #16202a;
+  --surface-2: #1e2a36;
+  --ink: #e9eff5;
+  --muted: #92a2b4;
+  --line: #2a3846;
+  --bar: #1b2835;
+  --go: #3ddc84;
+  --l1: #ff6b5e;
+  --l2: #ffa040;
+  --l3: #e6c34a;
+  --l4: #4ed08a;
+  --l5: #3cc9c9;
+  --l6: #6ea0ff;
+  --l7: #a98bff;
+  --l8: #ee7ad6;
+  --on-lane: #0b1118;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 10;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--l6); outline-offset: 2px; }
+
+.title-block {
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+}
+h1 {
+  margin: 0;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.lede { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+/* Sticky control bar */
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--bar);
+  color: var(--bar-ink);
+}
+.bar-in {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+}
+.gbtn {
+  min-height: 46px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: var(--bar-ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0 6px;
+}
+.gbtn.go { background: var(--go); border-color: var(--go); color: var(--go-ink); }
+.gbtn.arm { background: var(--l1); border-color: var(--l1); color: var(--on-lane); }
+.gbtn:active { transform: scale(0.97); }
+.strip {
+  height: 5px;
+  background: linear-gradient(90deg,
+    var(--l1) 0 12.5%, var(--l2) 12.5% 25%, var(--l3) 25% 37.5%, var(--l4) 37.5% 50%,
+    var(--l5) 50% 62.5%, var(--l6) 62.5% 75%, var(--l7) 75% 87.5%, var(--l8) 87.5% 100%);
+}
+
+.wrap {
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) 28px max(16px, env(safe-area-inset-left, 0px));
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (min-width: 720px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Lane card */
+.card {
+  container-type: inline-size;
+  min-width: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.card[data-st="running"] { border-color: var(--lane); box-shadow: 0 0 0 1px var(--lane); }
+
+.head { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.chip {
+  flex: none;
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border-radius: 5px;
+  background: var(--lane);
+  color: var(--on-lane);
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.name {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--line);
+  border-radius: 0;
+  padding: 2px 0;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.name::placeholder { color: var(--muted); font-weight: 500; }
+.dot {
+  flex: none;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+  opacity: 0.6;
+}
+.card[data-st="running"] .dot { background: var(--lane); border-color: var(--lane); opacity: 1; animation: pulse 1.2s ease-in-out infinite; }
+.card[data-st="paused"] .dot { border-color: var(--lane); opacity: 1; }
+@keyframes pulse { 50% { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) { .card[data-st="running"] .dot { animation: none; } .gbtn:active, .btn:active { transform: none; } }
+
+.total {
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 24cqw, 3.1rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.total.long { font-size: clamp(1.5rem, 18cqw, 2.4rem); }
+.sub {
+  display: flex; justify-content: space-between; gap: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.sub b {
+  color: var(--ink);
+  font-family: var(--font-num);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctl { display: flex; gap: 6px; margin-top: 2px; }
+.btn {
+  min-height: 54px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  font-weight: 700;
+}
+.btn:active { transform: scale(0.97); }
+.btn.main {
+  flex: 1;
+  background: var(--lane);
+  color: var(--on-lane);
+  font-size: 1.25rem;
+}
+.btn.side {
+  flex: 0 0 37%;
+  background: var(--surface-2);
+  border-color: var(--line);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+.btn.side.arm { background: var(--l1); border-color: var(--l1); color: var(--on-lane); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+
+.laps {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.laps.open { max-height: 46vh; overflow-y: auto; }
+.laps li {
+  display: grid;
+  grid-template-columns: 1.7em 1fr auto;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+.laps .n { color: var(--muted); font-size: 0.9rem; }
+.laps .lt { font-weight: 600; font-size: 1.15rem; }
+.laps .cu { color: var(--muted); font-size: 0.88rem; }
+.laps li.best { background: color-mix(in srgb, var(--lane) 18%, var(--surface)); }
+.laps li.best .lt { font-weight: 700; }
+
+.foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  min-height: 28px;
+}
+.foot .best-t { font-family: var(--font-num); font-size: 0.95rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tog {
+  background: transparent;
+  border: 0;
+  padding: 4px 2px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.82rem;
+}
+
+.tools { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 520px; }
+.copy {
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font-weight: 700;
+}
+.copy:active { transform: scale(0.98); }
+.hint { margin: 0; color: var(--muted); font-size: 0.86rem; max-width: 60ch; }
+#fallback {
+  width: 100%;
+  min-height: 160px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+#awake { margin: 0; color: var(--muted); font-size: 0.8rem; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--bar);
+  color: var(--bar-ink);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 20;
+  max-width: calc(100% - 32px);
+}
+</style>
+
+<div class="title-block">
+  <h1>八組計圈碼表</h1>
+  <p class="lede">各組獨立計時，跑完一圈就點該組的「計圈」。</p>
+</div>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="gbtn go" id="gStart" type="button">全部開始</button>
+    <button class="gbtn" id="gStop" type="button">全部停止</button>
+    <button class="gbtn" id="gReset" type="button">全部重置</button>
+  </div>
+  <div class="strip" aria-hidden="true"></div>
+</header>
+
+<main class="wrap">
+  <section class="grid" id="grid" aria-label="八組碼表"></section>
+
+  <section class="tools">
+    <button class="copy" id="copyBtn" type="button">複製全部成績</button>
+    <textarea id="fallback" hidden readonly aria-label="成績文字，可長按全選複製"></textarea>
+    <p class="hint">最後一圈到終點時，先按「計圈」再按「停止」，成績才會記下最後一圈。資料暫存在這支手機的瀏覽器，重新整理不會消失。</p>
+    <p id="awake" hidden>螢幕保持開啟中</p>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  var KEY = 'laptimer8-v1';
+  var N = 8;
+
+  function fresh(i, name) {
+    return { name: name != null ? name : String.fromCharCode(65 + i) + '組', st: 'idle', t0: 0, acc: 0, mark: 0, laps: [], open: false };
+  }
+
+  var W = null;
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var p = JSON.parse(raw);
+      if (Array.isArray(p) && p.length === N) W = p;
+    }
+  } catch (e) {}
+  if (!W) W = Array.from({ length: N }, function (_, i) { return fresh(i); });
+  W = W.map(function (w, i) { return Object.assign(fresh(i), w); });
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(W)); } catch (e) {} }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function fmt(ms) {
+    ms = Math.max(0, Math.floor(ms));
+    var cs = Math.floor(ms / 10) % 100;
+    var s = Math.floor(ms / 1000) % 60;
+    var m = Math.floor(ms / 60000) % 60;
+    var h = Math.floor(ms / 3600000);
+    return (h ? h + ':' + pad(m) : m) + ':' + pad(s) + '.' + pad(cs);
+  }
+  function elapsed(w, now) { return w.acc + (w.st === 'running' ? now - w.t0 : 0); }
+
+  /* ---------- build cards ---------- */
+  var grid = document.getElementById('grid');
+  var cards = [];
+  function q(root, sel) { return root.querySelector(sel); }
+
+  for (var i = 0; i < N; i++) {
+    var a = document.createElement('article');
+    a.className = 'card';
+    a.dataset.i = i;
+    a.dataset.st = 'idle';
+    a.style.setProperty('--lane', 'var(--l' + (i + 1) + ')');
+    a.innerHTML =
+      '<div class="head">' +
+        '<span class="chip" aria-hidden="true">' + (i + 1) + '</span>' +
+        '<input class="name" id="name-' + (i + 1) + '" type="text" maxlength="8" enterkeyhint="done" autocomplete="off" aria-label="第' + (i + 1) + '道組別名稱" placeholder="第' + (i + 1) + '組">' +
+        '<span class="dot" aria-hidden="true"></span>' +
+      '</div>' +
+      '<div class="total" data-total>0:00.00</div>' +
+      '<div class="sub"><span>本圈 <b data-lap>0:00.00</b></span><span data-cnt>待命</span></div>' +
+      '<div class="ctl">' +
+        '<button type="button" class="btn side" data-act="side">重置</button>' +
+        '<button type="button" class="btn main" data-act="main">開始</button>' +
+      '</div>' +
+      '<ol class="laps" data-laps></ol>' +
+      '<div class="foot" data-foot hidden><span class="best-t" data-best></span><button type="button" class="tog" data-act="tog">全部</button></div>';
+    grid.appendChild(a);
+    var input = q(a, '.name');
+    input.value = W[i].name;
+    cards.push({
+      root: a, name: input,
+      total: q(a, '[data-total]'), lap: q(a, '[data-lap]'), cnt: q(a, '[data-cnt]'),
+      main: q(a, '[data-act="main"]'), side: q(a, '[data-act="side"]'),
+      laps: q(a, '[data-laps]'), foot: q(a, '[data-foot]'), best: q(a, '[data-best]'), tog: q(a, '[data-act="tog"]')
+    });
+  }
+
+  /* ---------- painting ---------- */
+  var armed = new Array(N).fill(0);
+
+  function sideLabel(i) {
+    var w = W[i], c = cards[i];
+    c.side.textContent = w.st === 'running' ? '停止' : '重置';
+    c.side.classList.remove('arm');
+  }
+  function disarm(i) {
+    if (armed[i]) { clearTimeout(armed[i]); armed[i] = 0; }
+    sideLabel(i);
+  }
+
+  function paintLaps(i) {
+    var w = W[i], c = cards[i], n = w.laps.length;
+    var best = Infinity, bi = -1;
+    w.laps.forEach(function (l, k) { if (l.t < best) { best = l.t; bi = k; } });
+    var show = w.open ? n : Math.min(2, n);
+    var html = '';
+    for (var k = n - 1; k >= n - show; k--) {
+      var l = w.laps[k];
+      html += '<li' + (k === bi && n > 1 ? ' class="best"' : '') + '><span class="n">' + (k + 1) + '</span><span class="lt">' + fmt(l.t) + '</span><span class="cu">' + fmt(l.c) + '</span></li>';
+    }
+    c.laps.innerHTML = html;
+    c.laps.classList.toggle('open', !!w.open && n > 0);
+    c.foot.hidden = n === 0;
+    c.best.textContent = n ? '最快 ' + fmt(best) : '';
+    c.tog.hidden = n <= 2;
+    c.tog.textContent = w.open ? '收合' : '全部 ' + n + ' 圈';
+  }
+
+  function paint(i) {
+    var w = W[i], c = cards[i];
+    c.root.dataset.st = w.st;
+    c.main.textContent = w.st === 'running' ? '計圈' : (w.st === 'paused' ? '繼續' : '開始');
+    disarm(i);
+    c.side.disabled = w.st === 'idle';
+    c.cnt.textContent = w.st === 'idle' ? '待命' : '第' + (w.laps.length + 1) + '圈';
+    paintLaps(i);
+  }
+
+  var raf = 0;
+  function tick() {
+    var now = Date.now(), any = false;
+    for (var i = 0; i < N; i++) {
+      var w = W[i], c = cards[i], e = elapsed(w, now);
+      c.total.textContent = fmt(e);
+      c.total.classList.toggle('long', e >= 3600000);
+      c.lap.textContent = fmt(e - w.mark);
+      if (w.st === 'running') any = true;
+    }
+    raf = any ? requestAnimationFrame(tick) : 0;
+  }
+  function ensureTick() { if (!raf) raf = requestAnimationFrame(tick); }
+
+  /* ---------- state changes ---------- */
+  function doStart(i, now) { var w = W[i]; if (w.st === 'running') return; w.st = 'running'; w.t0 = now; }
+  function doStop(i, now) { var w = W[i]; if (w.st !== 'running') return; w.acc += now - w.t0; w.st = 'paused'; }
+  function doLap(i, now) {
+    var w = W[i];
+    if (w.st !== 'running') return false;
+    now = Math.max(now, w.t0);
+    var e = elapsed(w, now), t = e - w.mark;
+    if (t < 300) return false;
+    w.laps.push({ t: t, c: e });
+    w.mark = e;
+    return true;
+  }
+  function doReset(i) { W[i] = fresh(i, W[i].name); }
+
+  var stamps = new Array(N).fill(0);
+  function takeStamp(i) {
+    var s = stamps[i], n = Date.now();
+    stamps[i] = 0;
+    return (s && n - s < 1500) ? s : n;
+  }
+  function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {} }
+
+  function after(indices) {
+    save();
+    indices.forEach(paint);
+    ensureTick();
+    tick();
+  }
+
+  /* ---------- screen wake lock ---------- */
+  var lock = null;
+  var awakeEl = document.getElementById('awake');
+  function showAwake() { awakeEl.hidden = !lock; }
+  function wake() {
+    try {
+      if (!('wakeLock' in navigator) || lock) return;
+      navigator.wakeLock.request('screen').then(function (l) {
+        lock = l;
+        l.addEventListener('release', function () { lock = null; showAwake(); });
+        showAwake();
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && W.some(function (w) { return w.st === 'running'; })) wake();
+  });
+
+  /* ---------- card events ---------- */
+  function idxOf(el) { return +el.closest('.card').dataset.i; }
+
+  grid.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest('[data-act="main"]');
+    if (b) stamps[idxOf(b)] = Date.now();
+  });
+  document.addEventListener('pointercancel', function () { stamps.fill(0); });
+
+  grid.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var i = idxOf(b), w = W[i], act = b.dataset.act;
+
+    if (act === 'main') {
+      var now = takeStamp(i);
+      if (w.st === 'running') { if (!doLap(i, now)) return; }
+      else doStart(i, now);
+      buzz(); wake();
+      after([i]);
+    } else if (act === 'side') {
+      if (w.st === 'running') {
+        doStop(i, Date.now());
+        after([i]);
+      } else if (w.st === 'paused') {
+        if (armed[i]) { doReset(i); after([i]); }
+        else {
+          b.textContent = '確定?';
+          b.classList.add('arm');
+          armed[i] = setTimeout(function () { armed[i] = 0; sideLabel(i); }, 2500);
+        }
+      }
+    } else if (act === 'tog') {
+      w.open = !w.open;
+      save();
+      paintLaps(i);
+    }
+  });
+
+  grid.addEventListener('input', function (e) {
+    if (e.target.classList.contains('name')) { W[idxOf(e.target)].name = e.target.value; save(); }
+  });
+  grid.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.classList.contains('name')) e.target.blur();
+  });
+
+  /* ---------- global controls ---------- */
+  var all = [0, 1, 2, 3, 4, 5, 6, 7];
+  document.getElementById('gStart').addEventListener('click', function () {
+    var now = Date.now();
+    all.forEach(function (i) { doStart(i, now); });
+    buzz(); wake();
+    after(all);
+  });
+  document.getElementById('gStop').addEventListener('click', function () {
+    var now = Date.now();
+    all.forEach(function (i) { doStop(i, now); });
+    after(all);
+  });
+  var gReset = document.getElementById('gReset'), gArm = 0;
+  gReset.addEventListener('click', function () {
+    if (gArm) {
+      clearTimeout(gArm); gArm = 0;
+      gReset.textContent = '全部重置'; gReset.classList.remove('arm');
+      all.forEach(doReset);
+      after(all);
+    } else {
+      gReset.textContent = '再按一次重置';
+      gReset.classList.add('arm');
+      gArm = setTimeout(function () { gArm = 0; gReset.textContent = '全部重置'; gReset.classList.remove('arm'); }, 2500);
+    }
+  });
+
+  /* ---------- copy results ---------- */
+  var toastEl = document.getElementById('toast'), toastT = 0;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.hidden = false;
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.hidden = true; }, 2200);
+  }
+  function report() {
+    var d = new Date(), now = Date.now();
+    var out = '跑班計圈成績 ' + d.getFullYear() + '/' + pad(d.getMonth() + 1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + '\n';
+    var has = false;
+    W.forEach(function (w, i) {
+      if (!w.laps.length && w.st === 'idle') return;
+      has = true;
+      out += '\n【' + (w.name || '第' + (i + 1) + '組') + '】總計 ' + fmt(elapsed(w, now)) + '，' + w.laps.length + ' 圈\n';
+      w.laps.forEach(function (l, k) { out += (k + 1) + '. ' + fmt(l.t) + '（累計 ' + fmt(l.c) + '）\n'; });
+    });
+    return has ? out.trim() : '';
+  }
+  var fb = document.getElementById('fallback');
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var text = report();
+    if (!text) { toast('還沒有成績可複製'); return; }
+    function fallback() {
+      fb.value = text; fb.hidden = false; fb.focus(); fb.select();
+      toast('請長按選取後複製');
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { fb.hidden = true; toast('已複製成績'); }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  /* ---------- init ---------- */
+  all.forEach(paint);
+  tick();
+  if (W.some(function (w) { return w.st === 'running'; })) { ensureTick(); wake(); }
+})();
+</script>
