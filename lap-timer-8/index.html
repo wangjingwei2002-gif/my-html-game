@@ -247,7 +247,9 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   font-size: 1.3rem;
 }
 .btn.side {
-  flex: 0 0 37%;
+  flex: 0 0 26%;
+  padding: 0;
+  font-size: 0.88rem;
   background: var(--surface-2);
   border-color: var(--line);
   color: var(--ink);
@@ -255,6 +257,23 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 }
 .btn.side.arm { background: var(--l1); border-color: var(--l1); color: var(--on-lane); }
 .btn:disabled { opacity: 0.4; cursor: default; }
+.curlap {
+  flex: 0 0 32%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.curlap span { color: var(--muted); font-size: 0.68rem; line-height: 1.1; }
+.curlap b {
+  font-family: var(--font-num);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
 
 .tools { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
 .copy {
@@ -450,6 +469,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
       '<button type="button" class="subbtn" data-act="detail" disabled><span>上圈 <b data-last>--</b></span><span data-cnt>待命</span></button>' +
       '<div class="ctl">' +
         '<button type="button" class="btn side" data-act="side">重置</button>' +
+        '<div class="curlap"><span>本圈</span><b data-cur>0:00.00</b></div>' +
         '<button type="button" class="btn main" data-act="main">開始</button>' +
       '</div>';
     grid.appendChild(a);
@@ -457,7 +477,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
     input.value = W[i].name;
     cards.push({
       root: a, name: input,
-      total: q(a, '[data-total]'), last: q(a, '[data-last]'), cnt: q(a, '[data-cnt]'),
+      total: q(a, '[data-total]'), cur: q(a, '[data-cur]'), last: q(a, '[data-last]'), cnt: q(a, '[data-cnt]'),
       sub: q(a, '[data-act="detail"]'),
       main: q(a, '[data-act="main"]'), side: q(a, '[data-act="side"]')
     });
@@ -526,6 +546,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
       var w = W[i], c = cards[i], e = elapsed(w, now);
       c.total.textContent = fmt(e);
       c.total.classList.toggle('long', e >= 3600000);
+      c.cur.textContent = fmt(e - w.mark);
       if (w.st === 'running') any = true;
     }
     if (openIdx >= 0) pTotal.textContent = fmt(elapsed(W[openIdx], now));
