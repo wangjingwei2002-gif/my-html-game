@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: portrait phone, control bar on top that scrolls with the page, then a single column of 4 wide lane cards that fills the screen height; full lap history opens in a bottom sheet */
+/* Layout: portrait phone, control bar on top that scrolls with the page, then a single column of 4 compact lane cards (name and total on one row) that fills the screen height; full lap history opens in a bottom sheet */
 :root {
   --bg: #edf0f4;
   --surface: #ffffff;
@@ -122,7 +122,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
 }
 .gbtn {
-  min-height: 46px;
+  min-height: 42px;
   border-radius: 8px;
   border: 1.5px solid rgba(255, 255, 255, 0.4);
   background: transparent;
@@ -143,7 +143,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .wrap {
   max-width: 560px;
   margin: 0 auto;
-  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 28px max(16px, env(safe-area-inset-left, 0px));
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px));
 }
 
 /* Fixed 2 columns x 4 rows, sized to the screen */
@@ -165,7 +165,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 .card[data-st="running"] { border-color: var(--lane); box-shadow: 0 0 0 1px var(--lane); }
 
@@ -191,10 +191,11 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   border-radius: 0;
   padding: 2px 0;
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: 1.1rem;
 }
 .name::placeholder { color: var(--muted); font-weight: 500; }
 .dot {
+  display: none;
   flex: none;
   width: 10px; height: 10px;
   border-radius: 50%;
@@ -209,13 +210,14 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .total {
   font-family: var(--font-num);
   font-weight: 600;
-  font-size: clamp(2.2rem, 12cqw, 3.4rem);
+  font-size: clamp(2rem, 10cqw, 2.9rem);
+  flex: none;
   line-height: 1.05;
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.total.long { font-size: clamp(1.8rem, 10cqw, 2.8rem); }
+.total.long { font-size: clamp(1.5rem, 7.5cqw, 2.2rem); }
 
 /* Last-lap row, opens the full lap list */
 .subbtn {
@@ -224,7 +226,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  min-height: 38px;
+  min-height: 34px;
   padding: 2px 10px;
   border-radius: 6px;
   border: 1px solid var(--line);
@@ -242,7 +244,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 }
 .subbtn:disabled { cursor: default; opacity: 0.7; }
 
-.ctl { flex: 1; min-height: 60px; display: flex; gap: 6px; }
+.ctl { flex: 1; min-height: 54px; display: flex; gap: 6px; }
 .btn {
   border-radius: 8px;
   border: 1.5px solid transparent;
@@ -474,9 +476,8 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
       '<div class="head">' +
         '<span class="chip" aria-hidden="true">' + (i + 1) + '</span>' +
         '<input class="name" id="name-' + (i + 1) + '" type="text" maxlength="8" enterkeyhint="done" autocomplete="off" aria-label="第' + (i + 1) + '道組別名稱" placeholder="第' + (i + 1) + '組">' +
-        '<span class="dot" aria-hidden="true"></span>' +
+        '<div class="total" data-total>0:00.00</div>' +
       '</div>' +
-      '<div class="total" data-total>0:00.00</div>' +
       '<button type="button" class="subbtn" data-act="detail" disabled><span>上圈 <b data-last>--</b></span><span data-cnt>待命</span></button>' +
       '<div class="ctl">' +
         '<button type="button" class="btn side" data-act="side">重置</button>' +
