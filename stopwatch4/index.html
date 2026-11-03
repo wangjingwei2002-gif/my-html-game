@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>四組碼表</title>
+  <meta name="description" content="四組可獨立計時、分圈的碼表">
+  <meta name="theme-color" content="#0b1220">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="四組碼表">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>四組碼表</h1>
+    <div class="global">
+      <button id="allStart" type="button">全部開始</button>
+      <button id="allPause" type="button">全部暫停</button>
+      <button id="allReset" type="button" class="danger">全部重設</button>
+    </div>
+    <div class="options">
+      <label id="wakeLabel" class="check" hidden>
+        <input type="checkbox" id="wakeToggle"> 螢幕保持亮起
+      </label>
+      <button id="installBtn" type="button" class="install" hidden>安裝到主畫面</button>
+    </div>
+  </header>
+
+  <p id="iosTip" class="tip" hidden>
+    iPhone／iPad：請在 Safari 點下方「分享」按鈕，選「加入主畫面」即可安裝。
+  </p>
+
+  <main id="grid" class="grid" aria-label="四組碼表"></main>
+
+  <noscript>此頁面需要開啟 JavaScript 才能使用。</noscript>
+
+  <script src="app.js"></script>
+</body>
+</html>
