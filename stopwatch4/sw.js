@@ -1,11 +1,9 @@
 // 改了任何檔案後，把版本號加 1（例如 v2），已安裝的使用者才會拿到新版
-const CACHE = 'stopwatch4-v1';
+const CACHE = 'stopwatch4-v2';
 
 const ASSETS = [
   './',
   './index.html',
-  './style.css',
-  './app.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
