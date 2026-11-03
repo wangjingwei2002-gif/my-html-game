@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>八組計圈碼表</title>
+<title>四組計圈碼表</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: portrait phone, control bar on top that scrolls with the page, then a fixed 2-column x 4-row grid that fills the screen height; full lap history opens in a bottom sheet */
+/* Layout: portrait phone, control bar on top that scrolls with the page, then a single column of 4 wide lane cards that fills the screen height; full lap history opens in a bottom sheet */
 :root {
   --bg: #edf0f4;
   --surface: #ffffff;
@@ -137,8 +137,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .strip {
   height: 5px;
   background: linear-gradient(90deg,
-    var(--l1) 0 12.5%, var(--l2) 12.5% 25%, var(--l3) 25% 37.5%, var(--l4) 37.5% 50%,
-    var(--l5) 50% 62.5%, var(--l6) 62.5% 75%, var(--l7) 75% 87.5%, var(--l8) 87.5% 100%);
+    var(--l1) 0 25%, var(--l2) 25% 50%, var(--l3) 50% 75%, var(--l4) 75% 100%);
 }
 
 .wrap {
@@ -150,17 +149,16 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 /* Fixed 2 columns x 4 rows, sized to the screen */
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   gap: 8px;
-  height: max(700px, calc(100dvh - 85px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+  min-height: calc(100dvh - 85px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 }
 
 /* Lane card */
 .card {
-  container-type: size;
+  container-type: inline-size;
   min-width: 0;
-  min-height: 0;
   background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 10px;
@@ -211,13 +209,13 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .total {
   font-family: var(--font-num);
   font-weight: 600;
-  font-size: clamp(1.9rem, 22cqw, 3rem);
+  font-size: clamp(2.2rem, 12cqw, 3.4rem);
   line-height: 1.05;
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.total.long { font-size: clamp(1.5rem, 17cqw, 2.3rem); }
+.total.long { font-size: clamp(1.8rem, 10cqw, 2.8rem); }
 
 /* Last-lap row, opens the full lap list */
 .subbtn {
@@ -226,25 +224,25 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  min-height: 32px;
-  padding: 2px 8px;
+  min-height: 38px;
+  padding: 2px 10px;
   border-radius: 6px;
   border: 1px solid var(--line);
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   text-align: left;
 }
 .subbtn b {
   color: var(--ink);
   font-family: var(--font-num);
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .subbtn:disabled { cursor: default; opacity: 0.7; }
 
-.ctl { flex: 1; min-height: 44px; display: flex; gap: 6px; }
+.ctl { flex: 1; min-height: 60px; display: flex; gap: 6px; }
 .btn {
   border-radius: 8px;
   border: 1.5px solid transparent;
@@ -255,12 +253,12 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   flex: 1;
   background: var(--l1);
   color: var(--on-lane);
-  font-size: 1.3rem;
+  font-size: 1.6rem;
 }
 .btn.side {
-  flex: 0 0 26%;
+  flex: 0 0 22%;
   padding: 0;
-  font-size: 0.88rem;
+  font-size: 1rem;
   background: var(--surface-2);
   border-color: var(--line);
   color: var(--ink);
@@ -269,17 +267,17 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 .btn.side.arm { background: var(--l1); border-color: var(--l1); color: var(--on-lane); }
 .btn:disabled { opacity: 0.4; cursor: default; }
 .curlap {
-  flex: 0 0 32%;
+  flex: 0 0 28%;
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-.curlap span { color: var(--muted); font-size: 0.68rem; line-height: 1.1; }
+.curlap span { color: var(--muted); font-size: 0.8rem; line-height: 1.1; }
 .curlap b {
   font-family: var(--font-num);
-  font-size: 1.05rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.15;
   white-space: nowrap;
@@ -398,8 +396,8 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 </header>
 
 <main class="wrap">
-  <h1 class="sr">八組計圈碼表</h1>
-  <section class="grid" id="grid" aria-label="八組碼表"></section>
+  <h1 class="sr">四組計圈碼表</h1>
+  <section class="grid" id="grid" aria-label="四組碼表"></section>
 
   <section class="tools">
     <button class="copy" id="copyBtn" type="button">複製全部成績</button>
@@ -430,8 +428,8 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
 
 <script>
 (function () {
-  var KEY = 'laptimer8-v1';
-  var N = 8;
+  var KEY = 'laptimer4-v1';
+  var N = 4;
 
   function fresh(i, name) {
     return { name: name != null ? name : String.fromCharCode(65 + i) + '組', st: 'idle', t0: 0, acc: 0, mark: 0, laps: [] };
@@ -661,7 +659,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   });
 
   /* ---------- global controls ---------- */
-  var all = [0, 1, 2, 3, 4, 5, 6, 7];
+  var all = [0, 1, 2, 3];
   document.getElementById('gStart').addEventListener('click', function () {
     var now = Date.now();
     all.forEach(function (i) { doStart(i, now); });
