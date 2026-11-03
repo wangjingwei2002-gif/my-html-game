@@ -414,6 +414,7 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
     <button class="copy" id="copyBtn" type="button">複製全部成績</button>
     <button class="copy" id="installBtn" type="button" hidden>安裝到主畫面</button>
     <p class="hint" id="iosTip" hidden>iPhone / iPad：請在 Safari 點下方「分享」按鈕，選「加入主畫面」即可安裝。</p>
+    <p class="hint" id="manualTip" hidden>安裝方式：點瀏覽器右上角選單（三個點）→「安裝應用程式」或「加到主畫面」。若選單裡沒有，請先用 Chrome 開啟這個網址（LINE、Facebook 等內建瀏覽器不能安裝）。</p>
     <textarea id="fallback" hidden readonly aria-label="成績文字，可長按全選複製"></textarea>
     <p class="hint">點各組的「上圈」那一列，可看該組全部圈速、最快與平均。最後一圈到終點時，先按「計圈」再按「停止」，才會記下最後一圈。資料暫存在這支手機的瀏覽器，重新整理不會消失。</p>
     <p id="awake" hidden>螢幕保持開啟中</p>
@@ -760,6 +761,10 @@ button { touch-action: manipulation; -webkit-user-select: none; user-select: non
   window.addEventListener('appinstalled', function () { btn.hidden = true; });
   var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (ios && !standalone) tip.hidden = false;
+  var manual = document.getElementById('manualTip');
+  if (!ios && !standalone) {
+    setTimeout(function () { if (btn.hidden) manual.hidden = false; }, 2500);
+  }
 })();
 </script>
 </body>
