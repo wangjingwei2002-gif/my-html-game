@@ -1,5 +1,5 @@
 // 改了任何檔案後，把版本號加 1（例如 v2），已安裝的使用者才會拿到新版
-const CACHE = 'photostyle-v1';
+const CACHE = 'photostyle-v2';
 
 const ASSETS = [
   './',

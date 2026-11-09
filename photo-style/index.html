@@ -125,7 +125,7 @@ details summary{cursor:pointer;color:var(--mut);font-size:13px;margin-top:6px}
     <div class="opt" id="suffixBox">檔名後綴：<input type="text" id="suffix" value="_styled" size="10"></div>
     <div class="opt">格式：
       <select id="fmt"><option value="keep">保持原格式</option><option value="jpeg">JPEG</option><option value="png">PNG</option><option value="webp">WebP</option></select>
-      畫質：<input type="range" id="q" min="0.6" max="1" step="0.01" value="0.92" style="width:90px"><output id="qO">92</output>
+      畫質：<input type="range" id="q" min="0.6" max="1" step="0.01" value="0.95" style="width:90px"><output id="qO">95</output>
     </div>
     <div class="opt">尺寸：
       <select id="size"><option value="0">原尺寸</option><option value="4096">長邊 4096</option><option value="2560">長邊 2560</option><option value="1600">長邊 1600</option></select>
@@ -146,8 +146,10 @@ const tick=()=>new Promise(r=>setTimeout(r,0));
 
 /* ---------- 風格預設 ---------- */
 const DEFAULT={sharpen:0,ev:0,contrast:0,sat:0,fade:0,warmth:0,shHue:200,shAmt:0,hiHue:40,hiAmt:0,vig:0,grain:0};
+const MINE={sharpen:-0.2,strength:0.8,ev:-0.2,contrast:0,sat:0,fade:0.02,warmth:0.1,vig:0.3,grain:0.1};
 const PRESETS=[
- {id:'none',name:'原始',desc:'不調整',p:{}},
+ {id:'mine',name:'我的預設',desc:'柔化・暗角・微暖',full:true,p:MINE},
+ {id:'none',name:'原始',desc:'不調整',full:true,p:{}},
  {id:'portrait',name:'暗調人像',desc:'深色背景・柔和膚色',p:{ev:-0.2,contrast:0.18,sat:-0.05,fade:0.02,warmth:0.10,shHue:200,shAmt:0.05,hiHue:25,hiAmt:0.06,vig:0.30,grain:0.10}},
  {id:'rain',name:'雨天膠片',desc:'低飽和・青綠暗部',p:{ev:-0.05,contrast:-0.05,sat:-0.18,fade:0.06,warmth:-0.12,shHue:185,shAmt:0.12,hiHue:40,hiAmt:0.03,vig:0.20,grain:0.30}},
  {id:'airy',name:'日系清透',desc:'明亮・暖調・粉嫩',p:{ev:0.30,contrast:-0.10,sat:-0.08,fade:0.05,warmth:0.15,shHue:170,shAmt:0.05,hiHue:40,hiAmt:0.07,vig:0.05,grain:0.12}},
@@ -160,8 +162,8 @@ const SL=[
  ['vig','暗角',0,0.6,0.01],['grain','顆粒',0,1,0.01]
 ];
 const ADV=[['shHue','暗部色相',0,360,1],['shAmt','暗部著色',0,0.3,0.005],['hiHue','亮部色相',0,360,1],['hiAmt','亮部著色',0,0.3,0.005]];
-let P={...DEFAULT,strength:1,refStrength:0};
-let activePreset='none';
+let P={...DEFAULT,strength:1,refStrength:0,...MINE};
+let activePreset='mine';
 
 function mkSliders(box,defs){
   for(const [k,label,min,max,step,kind] of defs){
@@ -186,11 +188,11 @@ const chips=$('#presets');
 for(const ps of PRESETS){
   const b=document.createElement('button');b.className='chip';b.dataset.id=ps.id;
   b.innerHTML=`${ps.name}<small>${ps.desc}</small>`;
-  b.onclick=()=>{P={...DEFAULT,sharpen:P.sharpen,strength:P.strength,refStrength:P.refStrength,...ps.p};activePreset=ps.id;syncUI();schedule()};
+  b.onclick=()=>{P={...DEFAULT,sharpen:ps.full?0:P.sharpen,strength:ps.full?1:P.strength,refStrength:P.refStrength,...ps.p};activePreset=ps.id;syncUI();schedule()};
   chips.appendChild(b);
 }
 $('#refStrength').oninput=e=>{P.refStrength=parseFloat(e.target.value);syncUI();schedule()};
-$('#reset').onclick=()=>{P={...DEFAULT,strength:1,refStrength:refs.length?0.8:0};activePreset='none';syncUI();schedule()};
+$('#reset').onclick=()=>{P={...DEFAULT,strength:1,refStrength:refs.length?0.8:0,...MINE};activePreset='mine';syncUI();schedule()};
 
 /* ---------- 影像處理核心 ---------- */
 const LIN=new Float32Array(256);
